@@ -1,5 +1,6 @@
 """
-Builds the three Gumroad downloads with your real product IDs.
+Builds the three Gumroad downloads (licensing switched ON) with your real product IDs.
+The source itself stays the owner version (licensing OFF) until you decide to sell.
 
 1. Fill in release_config.json (product IDs, links, support email).
 2. Run:  python build_release.py
@@ -8,12 +9,10 @@ Builds the three Gumroad downloads with your real product IDs.
 """
 import json, os, re, shutil, stat, sys, zipfile
 
-GOLD = "--gold" in sys.argv   # owner build: no license key, everything unlocked
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 cfg = json.load(open(os.path.join(HERE, "release_config.json"), encoding="utf-8"))
 for k in ("swissgrid_product_id", "swisstype_product_id", "bundle_product_id", "support_email"):
-    if GOLD: break
     if not cfg.get(k) or cfg[k].startswith("PASTE"):
         raise SystemExit("Fill in '%s' in release_config.json first." % k)
 
@@ -41,15 +40,10 @@ def stage_panel(name):
     t = re.sub(r'bundleUrl: "[^"]*"', 'bundleUrl: "%s"' % cfg.get("bundle_url", ""), t)
     t = re.sub(r'supportEmail: "[^"]*"', 'supportEmail: "%s"' % cfg["support_email"], t)
     t = re.sub(r'maxActivations: \d+', 'maxActivations: %d' % int(cfg.get("max_activations", 3)), t)
-    if GOLD:
-        t = t.replace("SwissLicense.start(window.SWISS_LICENSE_CONFIG);", """// GOLD OWNER BUILD: licensing is switched off. Everything is unlocked, no key, no expiry.
-(function () {
-  var n = document.createElement("div");
-  n.textContent = "%s %s Gold \\u00b7 owner build";
-  n.style.cssText = "font-size:10px;color:#d4af37;margin-top:14px;opacity:0.8";
-  (document.querySelector(".panel") || document.body).appendChild(n);
-})();""" % (name, VER))
-        assert "GOLD OWNER BUILD" in t
+    # Selling build: switch licensing on (the source in the repo has it off).
+    t = t.replace("var SWISS_LICENSING_ON = false;", "var SWISS_LICENSING_ON = true;")
+    t = t.replace(" \\u00b7 owner version", "")
+    assert "var SWISS_LICENSING_ON = true;" in t
     open(conf, "w", encoding="utf-8", newline="\n").write(t)
     return dst
 
@@ -74,10 +68,7 @@ def zip_dirs(zip_name, top, folders, flatten=False):
 
 grid = stage_panel("SwissGrid")
 typ = stage_panel("SwissType")
-if GOLD:
-    zip_dirs("Swiss-Tools-GOLD-%s.zip" % VER, "Swiss Tools GOLD %s" % VER, [grid, typ])
-else:
-    zip_dirs("SwissGrid-%s.zip" % VER, "SwissGrid", [grid], flatten=True)
-    zip_dirs("SwissType-%s.zip" % VER, "SwissType", [typ], flatten=True)
-    zip_dirs("Swiss-Bundle-%s.zip" % VER, "Swiss Bundle", [grid, typ])
+zip_dirs("SwissGrid-%s.zip" % VER, "SwissGrid", [grid], flatten=True)
+zip_dirs("SwissType-%s.zip" % VER, "SwissType", [typ], flatten=True)
+zip_dirs("Swiss-Bundle-%s.zip" % VER, "Swiss Bundle", [grid, typ])
 shutil.rmtree(STAGE)

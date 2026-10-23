@@ -4,7 +4,7 @@
 
 Built by Joseph Martinez (J.A.M.), grounded in Josef Müller-Brockmann's *Grid Systems in Graphic Design* and Robert Bringhurst's *The Elements of Typographic Style*.
 
-**Current version: 1.2.0 Gold** (owner build, no license key). See [CHANGELOG.md](CHANGELOG.md).
+**Latest version: 1.2.0.** Everything is unlocked: no license key, no expiry. This repository is the installable version: download it and run the installers. What's new: [CHANGELOG.md](CHANGELOG.md).
 
 | | |
 |---|---|
@@ -17,7 +17,7 @@ Built by Joseph Martinez (J.A.M.), grounded in Josef Müller-Brockmann's *Grid S
 
 ## SwissGrid
 
-![SwissGrid: Grid, Type sizes and Presets tabs](docs/images/swissgrid-tabs.png)
+![SwissGrid: Grid, Type sizes, Document and Presets tabs](docs/images/swissgrid-tabs.png)
 
 SwissGrid is organized in four tabs so every control stays near the top of the panel: **Grid**, **Type sizes**, **Document** and **Presets**.
 
@@ -130,7 +130,7 @@ They appear under **Window > Extensions (legacy)**, not the **Plugins** menu: Ph
 
 To update, run the installer again: it replaces the old copy. To remove, run the matching `Uninstall-*` file.
 
-**Gold owner build:** `python release/build_release.py --gold` builds `Swiss-Tools-GOLD-<version>.zip` with licensing switched off (no key, no expiry).
+There is one version: what's in this repository. Licensing is a single switch, `SWISS_LICENSING_ON` in each panel's `js/license-config.js`, and it is **off**.
 
 ### Troubleshooting
 
@@ -143,7 +143,7 @@ To update, run the installer again: it replaces the old copy. To remove, run the
 
 ## Selling later (Gumroad)
 
-The release builder also makes the Gumroad downloads (SwissGrid, SwissType and the Swiss Bundle) with license keys checked against Gumroad's license API: a SwissGrid or SwissType key unlocks its panel, a Bundle key unlocks both, keys work on up to 3 computers, re-check monthly and work offline for 14 days. Fill in `release/release_config.json` and run `python release/build_release.py`. This is switched off in the Gold build.
+Not shipping yet. When it's time, `python release/build_release.py` makes the three Gumroad downloads (SwissGrid, SwissType and the Swiss Bundle) with the licensing switch turned **on**: keys are checked against Gumroad's license API, a SwissGrid or SwissType key unlocks its panel, a Bundle key unlocks both, keys work on up to 3 computers, re-check monthly and work offline for 14 days. The code in this repository stays unlocked.
 
 ---
 
@@ -162,7 +162,7 @@ SwissGrid/
     js/suggest.js         canvas detection and grid suggestions
     js/gridstore.js       grids shared with SwissType
     js/cepfix.js          scrolling that works in every CEP version
-    js/license.js         Gumroad licensing (off in Gold builds)
+    js/license.js         Gumroad licensing (switched off; see license-config.js)
     js/panel.js           the panel
     jsx/host.jsx          Photoshop side: guides, colored layers, type, metadata
 SwissType/

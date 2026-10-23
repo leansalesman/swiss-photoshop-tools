@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.2.0 Gold (2026-10-23)
+## 1.2.0 (2026-10-23)
 
-Owner production build. Licensing switched off.
+Everything unlocked: licensing switched off (one switch, `SWISS_LICENSING_ON`). The repository is the installable version.
 
 **SwissGrid**
 - New: **Suggested grid** in the Grid tab. Recognizes the canvas (A0 to A6, B4, B5, Letter, Legal, Tabloid, square, screen sizes), suggests a Swiss grid with margins, gutters and fields in whole baseline lines, and steps Looser / Denser from 1 to 12 columns. Field shapes: square, golden tall, golden wide, Fibonacci. Thumbnail preview, specs, Apply suggestion and Edit in fields.
