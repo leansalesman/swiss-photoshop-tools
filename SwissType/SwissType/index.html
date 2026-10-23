@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SwissType</title>
+  <link rel="stylesheet" href="css/panel.css">
+</head>
+<body>
+  <div class="panel">
+    <div class="doc" id="docInfo">Connecting to Photoshop…</div>
+    <div class="sel" id="selInfo">Select a text layer</div>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="align">Align</button>
+      <button class="tab" data-tab="scale">Scale</button>
+      <button class="tab" data-tab="measure">Measure</button>
+      <button class="tab" data-tab="styles">Styles</button>
+    </nav>
+
+    <!-- ALIGN -->
+    <div class="pane" id="pane-align">
+      <div class="section-title">Baseline snap</div>
+      <div class="row">
+        <label class="lbl" for="snapTarget">Snap to</label>
+        <select id="snapTarget" class="grow">
+          <option value="guides">Nearest horizontal guide</option>
+          <option value="grid">Baseline grid</option>
+        </select>
+      </div>
+      <div id="gridFields">
+        <div class="row">
+          <label class="lbl" for="gridPreset">Grid</label>
+          <select id="gridPreset" class="grow">
+            <option value="">Custom</option>
+            <option value="15.24mm|5.08mm">6x6 Square (top 15.24, unit 5.08 mm)</option>
+            <option value="118px|75px">A3 Poster (top 118, unit 75 px)</option>
+            <option value="200px|50px">A4 or Letter 10/12 (top 200, unit 50 px)</option>
+          </select>
+        </div>
+        <div class="row">
+          <label class="lbl" for="gridTop">Top</label>
+          <input type="text" id="gridTop" class="grow" value="15.24mm">
+          <label class="lbl short" for="gridUnit">Unit</label>
+          <input type="text" id="gridUnit" class="grow" value="5.08mm">
+        </div>
+        <div class="hint" id="gridHint"></div>
+      </div>
+      <div class="row">
+        <label class="lbl" for="snapDir">Direction</label>
+        <select id="snapDir" class="grow">
+          <option value="nearest">Nearest</option>
+          <option value="up">Up only</option>
+          <option value="down">Down only</option>
+        </select>
+      </div>
+      <button id="btnSnap" class="primary">Snap baseline</button>
+      <div class="hint">Moves each selected text layer so its first baseline sits on the line. Works on point and paragraph text.</div>
+
+      <div class="section-title gap">Optical edge align</div>
+      <div class="hint">Aligns the letters themselves, not the text box, to the nearest guide.</div>
+      <div class="grid2">
+        <button id="edgeLeft">⇤ Left edge</button>
+        <button id="edgeRight">Right edge ⇥</button>
+        <button id="edgeTop">⤒ Top edge</button>
+        <button id="edgeBottom">Bottom edge ⤓</button>
+      </div>
+    </div>
+
+    <!-- SCALE -->
+    <div class="pane hidden" id="pane-scale">
+      <div class="row">
+        <label class="lbl" for="baseSize">Body</label>
+        <input type="text" id="baseSize" class="grow" value="12">
+        <label class="lbl short" for="leadUnit">Unit</label>
+        <input type="text" id="leadUnit" class="grow" value="14.4">
+      </div>
+      <div class="hint">Body size in pt. Unit = baseline leading (pt, or type 5.08mm).</div>
+      <div class="row">
+        <label class="lbl" for="scaleType">Scale</label>
+        <select id="scaleType" class="grow">
+          <option value="fib">Fibonacci (Bringhurst)</option>
+          <option value="trad">Traditional 6–72</option>
+          <option value="golden">Golden ratio 1.618</option>
+          <option value="fifth">Perfect fifth 1.5</option>
+          <option value="fourth">Perfect fourth 1.333</option>
+          <option value="third">Major third 1.25</option>
+        </select>
+      </div>
+      <div class="row">
+        <label class="lbl" for="minRatio">Leading</label>
+        <select id="minRatio" class="grow">
+          <option value="1.15">At least 1.15 × size</option>
+          <option value="1.2" selected>At least 1.2 × size</option>
+          <option value="1.3">At least 1.3 × size</option>
+        </select>
+      </div>
+      <label class="check"><input type="checkbox" id="tightDisplay" checked> Tight leading for display sizes (36 pt and up)</label>
+      <label class="check"><input type="checkbox" id="snapAfter" checked> Snap baseline after applying (uses Align settings)</label>
+      <div id="scaleList" class="list scale"></div>
+    </div>
+
+    <!-- MEASURE -->
+    <div class="pane hidden" id="pane-measure">
+      <button id="btnMeasure" class="primary">Measure selected text</button>
+      <div class="row">
+        <label class="lbl" for="colMode">Setting</label>
+        <select id="colMode" class="grow">
+          <option value="single">Single column (45–75, ideal 66)</option>
+          <option value="multi">Multi-column (40–50)</option>
+        </select>
+      </div>
+      <div id="measureOut" class="measure"></div>
+    </div>
+
+    <!-- STYLES -->
+    <div class="pane hidden" id="pane-styles">
+      <div class="row">
+        <input type="text" id="styleName" class="grow" placeholder="Style name, e.g. Body 12/14.4">
+        <button id="btnSaveStyle">Save from selected</button>
+      </div>
+      <div class="hint">Apply these parts:</div>
+      <div class="parts" id="partToggles"></div>
+      <div id="styleList" class="list"></div>
+      <div class="row">
+        <button id="btnExportStyles" class="grow small">Export…</button>
+        <button id="btnImportStyles" class="grow small">Import…</button>
+      </div>
+    </div>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <script src="js/grid.js"></script>
+  <script src="js/type.js"></script>
+  <script src="js/panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SwissGrid</title>
+  <link rel="stylesheet" href="css/panel.css">
+</head>
+<body>
+  <div class="panel">
+
+    <div class="doc" id="docInfo">Connecting to Photoshop…</div>
+
+    <section>
+      <div class="row">
+        <input type="text" id="gridName" class="grow" placeholder="Grid name">
+      </div>
+      <div class="row">
+        <input type="color" id="colorPicker" value="#00aeef" title="Pick a color">
+        <input type="text" id="colorHex" value="#00AEEF" class="hex" spellcheck="false">
+        <div class="swatches" id="quickSwatches"></div>
+      </div>
+      <div class="row">
+        <label class="lbl" for="drawMode">Draw as</label>
+        <select id="drawMode" class="grow">
+          <option value="both">Guides + colored layer</option>
+          <option value="layer">Colored layer only</option>
+          <option value="guides">Guides only</option>
+        </select>
+        <select id="lineWidth" title="Line thickness">
+          <option value="1">1 px</option>
+          <option value="2">2 px</option>
+          <option value="3">3 px</option>
+          <option value="4">4 px</option>
+        </select>
+      </div>
+      <div class="row">
+        <label class="lbl" for="unit">Unit</label>
+        <select id="unit">
+          <option value="mm">mm</option>
+          <option value="px">px</option>
+          <option value="in">in</option>
+          <option value="cm">cm</option>
+          <option value="pt">pt</option>
+          <option value="%">%</option>
+        </select>
+        <span class="hint">or type 75px, 12pt…</span>
+      </div>
+    </section>
+
+    <section class="cols">
+      <div class="col">
+        <div class="col-title">Columns</div>
+        <label class="field"><span>Left margin</span><input type="text" id="marginLeft"></label>
+        <label class="field"><span>Right margin</span><input type="text" id="marginRight"></label>
+        <label class="field"><span>Columns</span><input type="text" id="columns"></label>
+        <label class="field"><span>Width</span><input type="text" id="columnWidth" placeholder="auto"></label>
+        <label class="field"><span>Gutter</span><input type="text" id="columnGutter"></label>
+        <label class="field"><span>Position</span>
+          <select id="alignH"><option value="start">Left</option><option value="center">Center</option><option value="end">Right</option></select>
+        </label>
+        <label class="check"><input type="checkbox" id="midVertical"> Midpoint</label>
+      </div>
+      <div class="col">
+        <div class="col-title">Rows</div>
+        <label class="field"><span>Top margin</span><input type="text" id="marginTop"></label>
+        <label class="field"><span>Bottom margin</span><input type="text" id="marginBottom"></label>
+        <label class="field"><span>Rows</span><input type="text" id="rows"></label>
+        <label class="field"><span>Height</span><input type="text" id="rowHeight" placeholder="auto"></label>
+        <label class="field"><span>Gutter</span><input type="text" id="rowGutter"></label>
+        <label class="field"><span>Position</span>
+          <select id="alignV"><option value="start">Top</option><option value="center">Middle</option><option value="end">Bottom</option></select>
+        </label>
+        <label class="check"><input type="checkbox" id="midHorizontal"> Midpoint</label>
+      </div>
+    </section>
+
+    <div class="preview" id="preview"></div>
+
+    <details class="typerec" id="typeRecBox" open>
+      <summary>Type sizes for this grid</summary>
+      <div id="typeRec"></div>
+    </details>
+
+    <section class="actions">
+      <button id="btnApply" class="primary">Apply grid</button>
+      <button id="btnBaseline" class="baseline-btn" title="Adds the baseline grid that matches these measurements: one line per body leading, from the top of the first field to the bottom of the last.">Apply matching baseline</button>
+      <div class="row">
+        <button id="btnSavePreset" class="grow">Save preset</button>
+        <button id="btnClearInputs" class="grow">Clear inputs</button>
+      </div>
+    </section>
+
+    <div class="status" id="status"></div>
+
+    <section>
+      <div class="section-title">On this document</div>
+      <div id="appliedList" class="list"></div>
+      <button id="btnClearAll" class="danger">Clear all grids</button>
+    </section>
+
+    <section>
+      <div class="section-title">Presets</div>
+      <div id="presetList" class="list"></div>
+      <div class="row">
+        <button id="btnExport" class="grow small">Export…</button>
+        <button id="btnImport" class="grow small">Import…</button>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="js/grid.js"></script>
+  <script src="js/typeRec.js"></script>
+  <script src="js/panel.js"></script>
+</body>
+</html>
