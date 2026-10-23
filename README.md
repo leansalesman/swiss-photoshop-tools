@@ -64,6 +64,21 @@ Each tool installs the same way:
 
 Uninstall with the matching `Uninstall-*.bat`. Full instructions are in [SwissGrid/README.md](SwissGrid/README.md), [SwissType/README.md](SwissType/README.md) and [SwissType/readme.txt](SwissType/readme.txt).
 
+## UXP versions (Photoshop 2023 and later)
+
+Adobe is phasing out CEP panels in Photoshop: the Marketplace stops taking new CEP plugins in March 2027, and Photoshop turns them off by default in December 2027. So both tools also come as **UXP plugins**, which you install through Creative Cloud and which can be sold on the Adobe Marketplace:
+
+- [SwissGrid/SwissGrid-UXP/](SwissGrid/SwissGrid-UXP/) (`com.jam.swissgrid`, v2.0.0)
+- [SwissType/SwissType-UXP/](SwissType/SwissType-UXP/) (`com.jam.swisstype`, v2.0.0)
+
+They need Photoshop 24.2 (2023) or later. Each has the same features as its CEP panel and saves grids in the .psd the same way, so SwissType UXP snaps to grids from either version of SwissGrid. Style and preset files export and import across both versions.
+
+**Try one in Photoshop:** install Adobe's **UXP Developer Tool** from the Creative Cloud app, click **Add Plugin**, pick the folder's `manifest.json`, then **Load**. The panel appears under **Plugins > SwissGrid** (or **SwissType**).
+
+**Package for the Marketplace:** in UXP Developer Tool, choose **Package** to build a `.ccx` file, then upload it in the Adobe Developer Distribution portal. Before listing, replace the placeholder plugin ID with the ID the portal assigns, and add 23/46 px panel icons and 24/48 px plugin icons in light and dark versions.
+
+UXP files: `manifest.json`, `index.html`, `css/panel.css`, and `js/`. The `js/` folder holds the same grid and type math as the CEP panels, `host.js` (the Photoshop side, using `batchPlay` and the UXP DOM), and `panel.js`.
+
 ## A typical workflow
 
 1. **SwissGrid:** apply a field grid (for example 12 columns x 10 rows on A3), then click **Apply matching baseline**.
