@@ -8,6 +8,22 @@ Runs as dockable panels in **Photoshop CC 2019 through 2024 on Windows, includin
 
 ---
 
+## Better together: SwissType auto-aligns to your SwissGrid
+
+This is the feature Photoshop never had. Select any text layers, click once, and every first baseline lands exactly on your grid.
+
+<img src="docs/images/swisstype-align.png" alt="SwissType Align tab snapping a text layer to a SwissGrid baseline grid" width="340" align="right">
+
+1. **SwissGrid saves the grid inside your .psd.** Every grid you apply is stored in the document, with its exact line positions.
+2. **SwissType finds it on its own.** The Align tab reads those grids and picks the baseline grid automatically. In the screenshot, *Swiss Pop A3 Grid 12×10 Baseline 14.4 pt* is picked with no setup: 81 lines, exactly as SwissGrid drew them.
+3. **One click snaps everything you selected.** **Snap baseline** moves each selected text layer, point or paragraph, so its first baseline sits on the nearest line (or the next line up or down). Each layer reports how far it moved, for example *Lorem Ipsum: -14 px*.
+4. **Then align the letters, not the box.** **Optical edge align** moves the visible type itself onto the nearest column guide, so a headline's first letter sits exactly on the margin.
+5. **One Ctrl+Z undoes it all.** Each snap is a single history step.
+
+Without it, you'd nudge each text box by eye and check it at 400% zoom. With both panels, every block of type on the poster shares one baseline rhythm.
+
+<br clear="right">
+
 ## SwissGrid
 
 A GuideGuide-style grid builder where **every grid gets its own color** and grids stack.
