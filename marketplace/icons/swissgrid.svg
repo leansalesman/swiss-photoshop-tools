@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="192" height="192">
+  <!-- SwissGrid: a 2 x 2 field grid with one field in signal red. -->
+  <rect width="96" height="96" rx="18" fill="#1C1C1C"/>
+  <rect x="18" y="18" width="27" height="27" fill="#FF3B30"/>
+  <rect x="51" y="18" width="27" height="27" fill="#EDEDED"/>
+  <rect x="18" y="51" width="27" height="27" fill="#EDEDED"/>
+  <rect x="51" y="51" width="27" height="27" fill="#EDEDED"/>
+</svg>

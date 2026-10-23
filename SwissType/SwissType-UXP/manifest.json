@@ -18,12 +18,12 @@
       "preferredDockedSize": { "width": 340, "height": 640 },
       "preferredFloatingSize": { "width": 340, "height": 640 },
       "icons": [
-        { "width": 23, "height": 23, "path": "icons/icon.png", "theme": ["all"] }
+        { "width": 23, "height": 23, "path": "icons/panel.png", "scale": [1, 2], "theme": ["all"] }
       ]
     }
   ],
   "icons": [
-    { "width": 48, "height": 48, "path": "icons/icon.png", "theme": ["all"], "species": ["pluginList"] }
+    { "width": 24, "height": 24, "path": "icons/plugin.png", "scale": [1, 2], "theme": ["all"], "species": ["pluginList"] }
   ],
   "requiredPermissions": {
     "localFileSystem": "request"

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SwissGrid and SwissType Help</title>
+  <meta name="description" content="How to install and use SwissGrid and SwissType, two Photoshop plugins for designing in the Swiss / International Typographic Style.">
+  <link rel="icon" href="icons/swissgrid-48.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="index.html">Swiss<span>·</span>Tools</a>
+      <nav class="site">
+        <a href="index.html" aria-current="page">Help</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Swiss grids and type,<br><span class="accent">inside Photoshop.</span></h1>
+    <p class="lede">SwissGrid and SwissType are two Photoshop plugins for designing in the Swiss / International Typographic Style: grids in any color, type sizes that lock to the grid, and text that snaps exactly onto the baseline.</p>
+
+    <div class="products">
+      <div class="product">
+        <img src="icons/swissgrid-192.png" alt="">
+        <div><h3>SwissGrid</h3><p>Müller-Brockmann grids in any unit and any color, with type sizes that land on whole lines.</p></div>
+      </div>
+      <div class="product">
+        <img src="icons/swisstype-192.png" alt="">
+        <div><h3>SwissType</h3><p>Baseline snap, optical edge align, type scales, a line-length checker and text styles.</p></div>
+      </div>
+    </div>
+
+    <section class="sect" id="install">
+      <h2>Install</h2>
+      <div>
+        <p>Both plugins need <strong>Photoshop 2023 (version 24.2) or later</strong>.</p>
+        <ol>
+          <li>Get the plugin from the Adobe Marketplace: <mark class="todo">[SwissGrid Marketplace link]</mark>, <mark class="todo">[SwissType Marketplace link]</mark>. After you buy, the Creative Cloud app installs it for you.</li>
+          <li>Restart Photoshop if it was open.</li>
+          <li>Choose <strong>Plugins &gt; SwissGrid</strong> or <strong>Plugins &gt; SwissType</strong>. Drag the panel's tab next to your other panels to dock it.</li>
+        </ol>
+        <p class="small muted">To uninstall: Creative Cloud app &gt; Stock &amp; Marketplace &gt; Plugins &gt; Manage plugins, then Uninstall.</p>
+      </div>
+    </section>
+
+    <section class="sect" id="swissgrid">
+      <h2>SwissGrid</h2>
+      <div>
+        <h3>Build a grid</h3>
+        <ol>
+          <li>Open a document. The top line of the panel shows its size and resolution.</li>
+          <li>Name the grid and pick a color (type a hex value or click a swatch).</li>
+          <li>Choose how to draw it: <strong>Guides + colored layer</strong>, <strong>Colored layer only</strong> or <strong>Guides only</strong>, and the line thickness.</li>
+          <li>Choose a unit (mm, px, in, cm, pt or %). You can also type a unit into any field, like <code>75px</code> or <code>12pt</code>.</li>
+          <li>Fill in <strong>Columns</strong> (left and right margins, number of columns, width, gutter) and <strong>Rows</strong> (top and bottom margins, rows, height, gutter). Leave Width or Height empty to fit the space. The line under the fields shows the result as you type.</li>
+          <li>Click <strong>Apply grid</strong> or press Enter.</li>
+        </ol>
+        <p>Switching the unit converts every field exactly. If you meant to keep the numbers and just reinterpret them, click <strong>Keep the numbers instead</strong> in the message that appears.</p>
+
+        <h3>Type sizes for this grid</h3>
+        <p>SwissGrid reads your grid's baseline unit and lists Caption, Body, Subhead, Heading, Title and Display sizes whose leading lands on whole lines. It also tells you how many columns body text should span for a comfortable 45–75 characters per line, following Robert Bringhurst.</p>
+        <p>Select text layers in Photoshop, then click <strong>Apply</strong> on a role to set its size and leading. Shift-click Apply to copy the size instead.</p>
+
+        <h3>Apply matching baseline</h3>
+        <p>After you apply a field grid, click <strong>Apply matching baseline</strong>. SwissGrid adds the baseline grid that belongs to it: one line per body leading, from the top of the first field to the bottom of the last, in a contrasting color. SwissType snaps text to this grid.</p>
+
+        <h3>Manage grids</h3>
+        <ul>
+          <li><strong>On this document</strong> lists every grid you've applied. <strong>Hide</strong>/<strong>Show</strong> toggles its colored layer and <strong>Remove</strong> deletes it.</li>
+          <li><strong>Clear all grids</strong> removes all guides and SwissGrid layers from the document.</li>
+          <li><strong>Presets</strong>: <strong>Load</strong> fills the form, <strong>Apply</strong> draws it at once. Save your own with <strong>Save preset</strong>, and share them with <strong>Export…</strong> and <strong>Import…</strong>.</li>
+          <li>Every action is a single Ctrl+Z (Cmd+Z on Mac).</li>
+          <li>Hide the SwissGrid layers before you export your artwork.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sect" id="swisstype">
+      <h2>SwissType</h2>
+      <div>
+        <p>The top lines of the panel show the document, its guides and the selected text layer's font, size and leading.</p>
+
+        <h3>Align</h3>
+        <h4>Baseline snap</h4>
+        <ol>
+          <li>Choose <strong>Snap to</strong>: <em>Nearest horizontal guide</em>, or <em>Baseline grid</em>.</li>
+          <li>For a baseline grid, pick it from the <strong>Grid</strong> menu. Grids applied with SwissGrid are listed first and the baseline grid is picked automatically. Without SwissGrid, choose a preset or type the grid's <strong>Top</strong> and <strong>Unit</strong> (line spacing), like <code>15.24mm</code> and <code>5.08mm</code>.</li>
+          <li>Choose a direction: <em>Nearest</em>, <em>Up only</em> or <em>Down only</em>.</li>
+          <li>Select one or more text layers and click <strong>Snap baseline</strong>. Each layer's first baseline moves onto a line, and the panel reports how far each one moved. Point and paragraph text both work; other layer types are skipped.</li>
+        </ol>
+        <h4>Optical edge align</h4>
+        <p>Click <strong>Left</strong>, <strong>Right</strong>, <strong>Top</strong> or <strong>Bottom edge</strong> to move the selected text so the letters themselves, not the text box, touch the nearest guide.</p>
+
+        <h3>Scale</h3>
+        <p>Enter the body size (pt) and the baseline unit (the body leading, in pt or mm). Pick a scale (Fibonacci, traditional, golden ratio, perfect fifth, perfect fourth or major third) and a minimum leading. Every size gets a leading in whole baseline units. Click <strong>Apply</strong> on a size to set the selected text layers. With <strong>Snap baseline after applying</strong> on, they also snap to the grid chosen on the Align tab.</p>
+
+        <h3>Measure</h3>
+        <p>Select a text layer and click <strong>Measure selected text</strong>. You get characters per line (Bringhurst's alphabet-length method), words per line, the measure in pt and mm, and the measure or type size you'd need for 66 characters. Point text with line breaks also shows a rag chart. Choose <em>Multi-column</em> to judge narrow columns against 40–50 characters.</p>
+
+        <h3>Styles</h3>
+        <p>Select a styled text layer, name the style and click <strong>Save from selected</strong>. Font, size, leading, tracking, color, case and alignment are saved. Tick the parts you want, then click <strong>Apply</strong> on a style to set them on the selected layers. <strong>Update</strong> replaces a style with the selected layer's settings. Share styles with <strong>Export…</strong> and <strong>Import…</strong>.</p>
+      </div>
+    </section>
+
+    <section class="sect" id="workflow">
+      <h2>A typical workflow</h2>
+      <div>
+        <ol>
+          <li><strong>SwissGrid:</strong> apply a field grid, for example 12 columns × 10 rows on A3, then click <strong>Apply matching baseline</strong>.</li>
+          <li><strong>SwissGrid:</strong> select your headline and click Apply on <em>Display</em>; select body copy and click Apply on <em>Body</em>.</li>
+          <li><strong>SwissType &gt; Align:</strong> with <em>Baseline grid</em> chosen (your SwissGrid baseline is already picked), select the text and click <strong>Snap baseline</strong>. Then click <strong>Left edge</strong> so the letters sit exactly on the margin.</li>
+          <li><strong>SwissType &gt; Measure:</strong> check that the body measure lands between 45 and 75 characters.</li>
+          <li>Hide the SwissGrid layers before exporting.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sect" id="faq">
+      <h2>Questions</h2>
+      <div>
+        <h4>Do I need both plugins?</h4>
+        <p>No. Each works on its own. SwissType can snap to your own guides or a baseline grid you type in. Together, SwissType finds SwissGrid's grids automatically.</p>
+        <h4>Where are my grids saved?</h4>
+        <p>Inside the .psd, so they're still listed when you reopen it. Your presets, styles and settings are saved on your computer.</p>
+        <h4>Snap moved my text to the wrong line.</h4>
+        <p>Check the Direction setting and that the right grid is chosen in Align &gt; Grid. Leave text editing mode (press Esc) before snapping.</p>
+        <h4>Something else isn't working.</h4>
+        <p>Email <mark class="todo">[support email]</mark> with your Photoshop version (Help &gt; About Photoshop), what you did, and any message the panel showed.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">© <mark class="todo">[year]</mark> <mark class="todo">[publisher name]</mark> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <mark class="todo">[support email]</mark><br>Adobe and Photoshop are trademarks of Adobe. SwissGrid and SwissType are not made or endorsed by Adobe.</div>
+  </footer>
+</body>
+</html>
