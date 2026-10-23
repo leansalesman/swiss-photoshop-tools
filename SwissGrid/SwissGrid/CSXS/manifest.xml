@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="7.0" ExtensionBundleId="com.jam.swissgrid" ExtensionBundleVersion="1.0.0" ExtensionBundleName="SwissGrid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ExtensionManifest Version="7.0" ExtensionBundleId="com.jam.swissgrid" ExtensionBundleVersion="1.2.0" ExtensionBundleName="SwissGrid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ExtensionList>
-    <Extension Id="com.jam.swissgrid.panel" Version="1.0.0" />
+    <Extension Id="com.jam.swissgrid.panel" Version="1.2.0" />
   </ExtensionList>
   <ExecutionEnvironment>
     <HostList>
@@ -23,6 +23,8 @@
           <ScriptPath>./jsx/host.jsx</ScriptPath>
           <CEFCommandLine>
             <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
           </CEFCommandLine>
         </Resources>
         <Lifecycle>

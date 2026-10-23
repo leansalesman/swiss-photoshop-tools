@@ -128,3 +128,79 @@ body.light { --fg: #1f1f1f; --muted: #555; --field: #fff; --line: #aaa; --btn: #
 .tr-note { font-size: 10px; color: #ffc861; margin-top: 4px; }
 .status button { margin-left: 6px; }
 button.baseline-btn { width: 100%; margin-bottom: 6px; }
+
+/* ---- license gate ---- */
+.license-gate {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 1000;
+  background: var(--bg); display: flex; align-items: flex-start; justify-content: center;
+  padding: 28px 14px; overflow: auto;
+}
+.lg-card { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 8px; }
+.lg-title { font-size: 15px; font-weight: 700; letter-spacing: 0.02em; }
+.lg-sub { font-size: 11px; color: var(--muted); line-height: 1.45; }
+.license-gate input[type="text"] { width: 100%; height: 26px; font-family: Consolas, Menlo, monospace; font-size: 11px; }
+.license-gate button.primary { width: 100%; margin: 0; }
+.lg-msg { font-size: 11px; min-height: 14px; line-height: 1.4; }
+.lg-msg.err { color: var(--err); }
+.lg-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+button.lg-link { background: none; border: none; padding: 0; color: var(--accent); font-size: 11px; cursor: pointer; text-decoration: underline; }
+button.lg-link:hover { background: none; filter: brightness(1.2); }
+.license-footer { margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 10px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.license-footer .lg-note { width: 100%; color: #ffc861; }
+
+/* ---- scrolling: .panel is the scroll container (works around CEP 11+ wheel bugs) ---- */
+html, body { height: 100%; overflow: hidden; }
+.panel { height: 100%; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; }
+.panel::-webkit-scrollbar { width: 9px; }
+.panel::-webkit-scrollbar-track { background: transparent; }
+.panel::-webkit-scrollbar-thumb { background: #5a5a5a; border-radius: 5px; border: 2px solid var(--bg); }
+.panel::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+
+/* ---- tabs (1.1.2: everything reachable without scrolling) ---- */
+.tabs { display: flex; gap: 2px; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
+.tab { flex: 1 1 0; background: transparent; border: none; border-bottom: 2px solid transparent; border-radius: 0; padding: 6px 2px; color: var(--muted); font-size: 11px; white-space: nowrap; }
+.tab:hover { background: transparent; color: var(--fg); }
+.tab.active { color: var(--fg); border-bottom-color: var(--accent); }
+.pane.hidden { display: none; }
+.status:empty { display: none; }
+.status { margin-bottom: 8px; }
+.actions { margin-bottom: 10px; }
+.actions .preview { margin: 2px 0 0; }
+.typerec { border: none; padding: 0; }
+button.link-btn { background: none; border: none; padding: 0; margin-top: 10px; color: var(--accent); font-size: 10px; text-decoration: underline; cursor: pointer; }
+button.link-btn:hover { background: none; }
+
+/* ---- long lists scroll inside a fixed box (1.1.2) ---- */
+#presetList, #appliedList { max-height: 340px; overflow-y: auto; }
+#presetList::-webkit-scrollbar, #appliedList::-webkit-scrollbar { width: 8px; }
+#presetList::-webkit-scrollbar-thumb, #appliedList::-webkit-scrollbar-thumb { background: #5a5a5a; border-radius: 4px; }
+
+/* ---- suggested grid card (1.2.0) ---- */
+.suggest { border: 1px solid var(--line); border-radius: 4px; padding: 8px; margin-bottom: 12px; }
+.sg-head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; margin-bottom: 6px; }
+.sg-head .section-title { margin: 0; }
+.sg-canvas { font-size: 10px; color: var(--fg); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sg-main { display: flex; gap: 10px; align-items: flex-start; }
+.sg-thumb { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 74px; height: 96px; }
+.sg-ctrls { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.sg-step { display: flex; align-items: center; gap: 4px; }
+.sg-lbl { width: 50px; font-size: 10px; color: var(--muted); }
+.sg-step b { min-width: 18px; text-align: center; font-variant-numeric: tabular-nums; }
+button.sg-btn { width: 22px; height: 20px; padding: 0; line-height: 1; font-size: 13px; }
+button.sg-auto { padding: 1px 6px; font-size: 9px; height: 18px; }
+button.sg-auto.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+#sgShape { width: 100%; }
+.sg-density { display: flex; gap: 4px; }
+.sg-density button { flex: 1 1 0; }
+.sg-spec { font-size: 10px; color: var(--muted); margin: 7px 0; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.sg-spec b { color: var(--fg); font-weight: 600; }
+.sg-actions { margin-bottom: 0; }
+button.sg-apply { background: #2a4f80; border-color: var(--accent); }
+
+/* ---- grouped presets (1.2.0) ---- */
+button.pg-head { display: flex; align-items: center; gap: 6px; width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 6px 0; text-align: left; color: var(--fg); font-weight: 600; font-size: 11px; }
+button.pg-head:hover { background: transparent; color: #fff; }
+.pg-caret { width: 10px; color: var(--muted); }
+.pg-name { flex: 1 1 auto; }
+.pg-count { font-size: 10px; color: var(--muted); font-weight: 400; background: var(--field); border-radius: 8px; padding: 0 6px; }
+.pg-item { padding-left: 8px; }

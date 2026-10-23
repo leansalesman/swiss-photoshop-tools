@@ -125,6 +125,8 @@ Needs: nothing else. No Creative Cloud app, no Adobe installer.
         less apart), SwissType picks it for you when you open the document
         or apply a new grid. Grids applied before this update are not in
         the list: apply them once more in SwissGrid.
+        If you only applied a field grid, SwissType also lists the baseline
+        SwissGrid recommends for it, marked "(calculated)", and uses it.
       Quick choices that match your SwissGrid presets:
         6x6 Square ............ top 15.24 mm, unit 5.08 mm
         A3 Poster ............. top 118 px,   unit 75 px

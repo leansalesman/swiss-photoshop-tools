@@ -107,7 +107,7 @@
         ? (d.selected > 1 ? d.selected + " layers · " : "") + f.name + " · " + f.font + " " + r1(f.size) + "/" + (f.leading ? r1(f.leading) : "auto") + " pt" + (f.tracking ? " · " + f.tracking : "")
         : (d.activeName ? d.activeName + " (not a text layer)" : "Select a text layer");
       if (prevDoc !== JSON.stringify(d.doc)) renderScale();
-      syncDocGrids(d.grids || [], prevDoc !== JSON.stringify(d.doc));
+      syncDocGrids(withDerived(mergeGrids(d.grids || [], d.doc)), prevDoc !== JSON.stringify(d.doc));
     }).catch(function (e) { $("docInfo").textContent = e.message; });
   }
 
@@ -117,6 +117,32 @@
 
   var docGrids = [], docGridSig = "";
 
+  // Grids from the document (XMP) plus the shared file SwissGrid writes on this computer.
+  function mergeGrids(fromDoc, d) {
+    var out = [], seen = {};
+    var fromFile = [];
+    try { if (window.SwissGridStore) fromFile = SwissGridStore.read(d); } catch (e) {}
+    fromDoc.concat(fromFile).forEach(function (g) { if (g && g.uid && !seen[g.uid]) { seen[g.uid] = 1; out.push(g); } });
+    return out;
+  }
+
+  // For field grids, add the baseline SwissGrid recommends (its "Type sizes" unit), calculated here.
+  function withDerived(grids) {
+    var out = grids.slice();
+    grids.forEach(function (g) {
+      if (!(g.unitPx > 0) || g.baseTop === undefined || g.baseBottom === undefined) return;
+      if (grids.some(function (o) { return o.step && Math.abs(o.step - g.unitPx) < 0.05 && Math.abs(o.top - g.baseTop) < 0.05; })) return; // already applied
+      var exact = (g.baseBottom - g.baseTop) / g.unitPx;
+      var n = Math.abs(exact - Math.round(exact)) < 0.02 ? Math.round(exact) : Math.floor(exact);
+      if (n < 2) return;
+      var lines = [];
+      for (var i = 0; i <= n; i++) lines.push(Math.round((g.baseTop + i * g.unitPx) * 10000) / 10000);
+      out.push({ uid: g.uid + ":base", name: g.name + " · baseline " + (g.unitPt || r1(g.unitPx)) + (g.unitPt ? " pt" : " px") + " (calculated)",
+                 top: g.baseTop, step: Math.round(g.unitPx * 100) / 100, lines: lines, derived: true });
+    });
+    return out;
+  }
+
   function selectedDocGrid() {
     var v = $("gridPreset").value;
     if (v.indexOf("doc:") !== 0) return null;
@@ -125,6 +151,7 @@
   }
 
   function gridLabel(g) {
+    if (g.derived) return g.name;
     if (g.step) return g.name + " (top " + r1(g.top) + ", line " + r1(g.step) + " px)";
     return g.name + " (" + (g.lines ? g.lines.length : 0) + " lines, uneven)";
   }
@@ -151,7 +178,7 @@
     var keep = current.indexOf("doc:") === 0 && selectedDocGridFor(current);
     if (keep) sel.value = current;
     else {
-      var best = docGrids.filter(isBaseline).sort(function (a, b) { return a.step - b.step; })[0];
+      var best = docGrids.filter(isBaseline).sort(function (a, b) { return (a.derived ? 1 : 0) - (b.derived ? 1 : 0) || a.step - b.step; })[0];
       if (best && (current === "" || current.indexOf("doc:") === 0 || wasNew)) {
         sel.value = "doc:" + best.uid;
         status("Using " + best.name + " from SwissGrid for baseline snapping.", "ok");
@@ -173,7 +200,9 @@
       $("gridUnit").value = g.step ? r1(g.step) + "px" : "uneven";
     }
     ["gridTop", "gridUnit"].forEach(function (id) { $(id).readOnly = lock; $(id).classList.toggle("locked", lock); });
-    $("gridHint").textContent = g ? "Snaps to the " + g.lines.length + " lines of “" + g.name + "” exactly as SwissGrid drew them." : "";
+    $("gridHint").textContent = !g ? "" : g.derived
+      ? "Snaps to " + g.lines.length + " baseline lines SwissType calculated from your SwissGrid grid (the body leading in SwissGrid's Type sizes tab). Tip: SwissGrid's + Baseline button draws them."
+      : "Snaps to the " + g.lines.length + " lines of “" + g.name + "” exactly as SwissGrid drew them.";
   }
 
   /* ---------- align ---------- */
@@ -188,6 +217,34 @@
     var top = G.toPx(s.gridTop, cx), unit = G.toPx(s.gridUnit, cx);
     if (top === null || !(unit > 0)) throw new Error("Enter the baseline grid's top and unit, for example 15.24mm and 5.08mm.");
     return { target: "grid", top: top, unit: unit, direction: s.snapDir };
+  }
+
+  function copyDiagnostics() {
+    var o = null; try { o = snapOptions(); } catch (e) { o = { error: e.message }; }
+    run("Measuring", "st_diag()", function (r) {
+      var cepVer = ""; try { cepVer = window.__adobe_cep__.getCurrentApiVersion(); } catch (e) {}
+      var lines = o && o.lines ? o.lines : null;
+      var report = {
+        swisstype: "1.2.0", cep: cepVer, ua: navigator.userAgent,
+        photoshop: r.ps, os: r.os, ppi: r.res, rulerUnits: r.rulerUnits, typeUnits: r.typeUnits, docPx: r.docPx, hGuides: r.hGuides,
+        snap: o && !o.error ? { target: o.target, grid: o.gridName || null, top: o.top, unit: o.unit, direction: o.direction,
+                     lines: lines ? lines.slice(0, 6).concat(["... " + lines.length + " total"]) : null } : o,
+        layers: (r.layers || []).map(function (L) {
+          var near = null;
+          if (typeof L.baselinePx === "number") {
+            var arr = lines || (o && o.unit ? null : null);
+            if (arr) { near = arr.reduce(function (a, b) { return Math.abs(b - L.baselinePx) < Math.abs(a - L.baselinePx) ? b : a; }, arr[0]); }
+          }
+          L.nearestLine = near; return L;
+        })
+      };
+      var txt = JSON.stringify(report, null, 2);
+      try {
+        var ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select();
+        document.execCommand("copy"); document.body.removeChild(ta);
+        status("Diagnostics copied (" + report.layers.length + " text layer" + (report.layers.length === 1 ? "" : "s") + "). Paste them to Claude.", "ok");
+      } catch (e) { status(txt, "ok"); }
+    });
   }
 
   function snapBaseline() {
@@ -401,6 +458,7 @@
     ["gridTop", "gridUnit"].forEach(function (id) { $(id).addEventListener("input", function () { $("gridPreset").value = ""; }); });
 
     $("btnSnap").addEventListener("click", snapBaseline);
+    $("btnDiag").addEventListener("click", copyDiagnostics);
     $("edgeLeft").addEventListener("click", function () { opticalAlign("left"); });
     $("edgeRight").addEventListener("click", function () { opticalAlign("right"); });
     $("edgeTop").addEventListener("click", function () { opticalAlign("top"); });

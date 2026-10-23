@@ -20,6 +20,9 @@ To remove it: **Uninstall-SwissGrid.bat**.
 
 ## Using the panel
 
+- **Tabs:** Grid, Type sizes, Document and Presets, so everything stays near the top of the panel.
+- **Suggested grid (Grid tab):** SwissGrid recognizes the canvas (A0 to A6, Letter, Legal, Tabloid, square, social sizes) and suggests a Swiss grid for it. Use Columns and Rows (+/-), or Looser / Denser, to go from 1 up to 12 columns; rows follow automatically for Square, Golden (tall or wide) or Fibonacci fields, or set them yourself. Margins, gutters and fields are whole baseline lines, and the body size and leading are shown. **Apply suggestion** draws it; **Edit in fields** loads it into the form to fine-tune.
+- **Presets** are grouped: Classic Swiss, Golden ratio & Fibonacci, Letter, A2, A3, A4, A5 and My presets. The group for your canvas opens automatically. Paper presets are in mm, so they work at any resolution.
 - **Name and color:** name the grid, click the color square (opens a color picker), type a hex value, or click a swatch.
 - **Draw as:**
   - **Guides + colored layer (default):** guides for snapping, plus the grid drawn in your color on a locked layer named `SwissGrid · <grid name>`.

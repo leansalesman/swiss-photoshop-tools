@@ -443,3 +443,30 @@ function st_importFile() {
         return stOk({ text: txt });
     } catch (e) { return stErr(e); }
 }
+
+
+// Read-only report for debugging on other Photoshop versions: what SwissType measures for each selected text layer.
+function st_diag() {
+    try {
+        var doc = stRequireDoc(), out = { ps: String(app.version), os: String($.os), res: doc.resolution,
+            rulerUnits: String(app.preferences.rulerUnits), typeUnits: String(app.preferences.typeUnits),
+            docPx: [stUvPx(doc.width, doc.resolution), stUvPx(doc.height, doc.resolution)],
+            hGuides: stGuidesAny(doc, false).length, layers: [] };
+        stUnits(function () {
+            $.global.__st_job = function () {
+                stEachText(doc, function (l) {
+                    var ti = l.textItem, b = l.bounds, info = { name: l.name };
+                    try { info.kind = ti.kind === TextType.POINTTEXT ? "point" : "paragraph"; } catch (e) { info.kind = "?" + e; }
+                    try { info.position = [String(ti.position[0]), String(ti.position[1])]; } catch (e) { info.position = "?" + e; }
+                    try { info.bounds = [String(b[0]), String(b[1]), String(b[2]), String(b[3])]; } catch (e) { info.bounds = "?" + e; }
+                    try { info.size = String(ti.size); info.autoLeading = ti.useAutoLeading; info.leading = ti.useAutoLeading ? null : String(ti.leading); } catch (e) { info.size = "?" + e; }
+                    try { info.baselinePx = stBaseline(doc, l); } catch (e) { info.baselinePx = "?" + e; }
+                    try { info.contentsStart = String(ti.contents).substr(0, 24); } catch (e) {}
+                    out.layers.push(info);
+                });
+            };
+            doc.suspendHistory("SwissType: Diagnostics", "$.global.__st_job()");
+        });
+        return stOk(out);
+    } catch (e) { return stErr(e); }
+}

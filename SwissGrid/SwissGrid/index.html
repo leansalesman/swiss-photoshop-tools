@@ -10,6 +10,48 @@
 
     <div class="doc" id="docInfo">Connecting to Photoshop…</div>
 
+    <nav class="tabs">
+      <button class="tab active" data-tab="grid">Grid</button>
+      <button class="tab" data-tab="type">Type sizes</button>
+      <button class="tab" data-tab="doc">Document</button>
+      <button class="tab" data-tab="presets">Presets</button>
+    </nav>
+
+    <div class="status" id="status"></div>
+
+    <div class="pane" id="pane-grid">
+    <section class="actions">
+      <button id="btnApply" class="primary">Apply grid</button>
+      <div class="row">
+        <button id="btnBaseline" class="grow small" title="Adds the baseline grid that matches these measurements: one line per body leading, from the top of the first field to the bottom of the last.">+ Baseline</button>
+        <button id="btnSavePreset" class="grow small">Save preset</button>
+        <button id="btnClearInputs" class="grow small">Clear</button>
+      </div>
+      <div class="preview" id="preview"></div>
+    </section>
+
+    <section class="suggest" id="suggestBox">
+      <div class="sg-head"><span class="section-title">Suggested grid</span><span id="sgCanvas" class="sg-canvas"></span></div>
+      <div class="sg-main">
+        <div class="sg-thumb"><svg id="sgPreview" width="74" height="96"></svg></div>
+        <div class="sg-ctrls">
+          <div class="sg-step"><span class="sg-lbl">Columns</span><button id="sgColMinus" class="sg-btn" title="Fewer columns">−</button><b id="sgCols">4</b><button id="sgColPlus" class="sg-btn" title="More columns">+</button></div>
+          <div class="sg-step"><span class="sg-lbl">Rows</span><button id="sgRowMinus" class="sg-btn" title="Fewer rows">−</button><b id="sgRows">5</b><button id="sgRowPlus" class="sg-btn" title="More rows">+</button><button id="sgRowAuto" class="sg-auto" title="Let SwissGrid pick rows for the field shape">auto</button></div>
+          <select id="sgShape" title="Shape of each field">
+            <option value="square">Square fields</option>
+            <option value="golden">Golden fields, tall</option>
+            <option value="wide">Golden fields, wide</option>
+            <option value="fibonacci">Fibonacci</option>
+          </select>
+          <div class="sg-density"><button id="sgLooser" class="small">◀ Looser</button><button id="sgDenser" class="small">Denser ▶</button></div>
+        </div>
+      </div>
+      <div class="sg-spec" id="sgSpec"></div>
+      <div class="row sg-actions">
+        <button id="sgApply" class="grow sg-apply">Apply suggestion</button>
+        <button id="sgUse" class="grow" title="Put these measurements in the fields below to fine-tune them">Edit in fields</button>
+      </div>
+    </section>
     <section>
       <div class="row">
         <input type="text" id="gridName" class="grow" placeholder="Grid name">
@@ -74,30 +116,25 @@
       </div>
     </section>
 
-    <div class="preview" id="preview"></div>
+    </div>
 
-    <details class="typerec" id="typeRecBox" open>
-      <summary>Type sizes for this grid</summary>
+    <div class="pane hidden" id="pane-type">
+    <div class="typerec" id="typeRecBox">
+      <div class="section-title">Type sizes for this grid</div>
       <div id="typeRec"></div>
-    </details>
+    </div>
+    </div>
 
-    <section class="actions">
-      <button id="btnApply" class="primary">Apply grid</button>
-      <button id="btnBaseline" class="baseline-btn" title="Adds the baseline grid that matches these measurements: one line per body leading, from the top of the first field to the bottom of the last.">Apply matching baseline</button>
-      <div class="row">
-        <button id="btnSavePreset" class="grow">Save preset</button>
-        <button id="btnClearInputs" class="grow">Clear inputs</button>
-      </div>
-    </section>
-
-    <div class="status" id="status"></div>
-
+    <div class="pane hidden" id="pane-doc">
     <section>
       <div class="section-title">On this document</div>
       <div id="appliedList" class="list"></div>
       <button id="btnClearAll" class="danger">Clear all grids</button>
     </section>
+      <button id="btnDiag" class="link-btn" title="Copies panel size and Photoshop details for troubleshooting">Copy diagnostics</button>
+    </div>
 
+    <div class="pane hidden" id="pane-presets">
     <section>
       <div class="section-title">Presets</div>
       <div id="presetList" class="list"></div>
@@ -106,11 +143,23 @@
         <button id="btnImport" class="grow small">Import…</button>
       </div>
     </section>
+    </div>
+
+
+
+
+
+
 
   </div>
 
   <script src="js/grid.js"></script>
   <script src="js/typeRec.js"></script>
+  <script src="js/suggest.js"></script>
+  <script src="js/gridstore.js"></script>
   <script src="js/panel.js"></script>
+  <script src="js/cepfix.js"></script>
+  <script src="js/license.js"></script>
+  <script src="js/license-config.js"></script>
 </body>
 </html>

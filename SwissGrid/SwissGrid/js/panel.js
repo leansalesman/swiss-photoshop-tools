@@ -29,6 +29,25 @@
     { gridName: "Golden Textblock A4 (300 ppi)", colorHex: "#E0A800", unit: "px", marginLeft: "275.56", marginRight: "551.11", columns: "", columnWidth: "", columnGutter: "", marginTop: "275.56", marginBottom: "551.11", rows: "", rowHeight: "", rowGutter: "", alignH: "start", alignV: "start", drawMode: "both", lineWidth: "2", midVertical: false, midHorizontal: false }
   ];
 
+  // Generated, canvas-proportioned presets (mm, so they work at any resolution).
+  try {
+    ["Letter", "A2", "A3", "A4", "A5"].forEach(function (id) { DEFAULT_PRESETS = DEFAULT_PRESETS.concat(GridSuggest.paperPresets(id)); });
+    DEFAULT_PRESETS = DEFAULT_PRESETS.concat(GridSuggest.fibonacciPresets());
+  } catch (e) { /* suggest.js missing */ }
+
+  var PRESET_GROUPS = ["Classic Swiss", "Golden ratio & Fibonacci", "Letter", "A2", "A3", "A4", "A5", "My presets"];
+  var CLASSIC = ["6x6 square swiss grid", "text baseline 6x6 swiss grid"];
+  function groupOf(p) {
+    if (p.group && PRESET_GROUPS.indexOf(p.group) >= 0) return p.group;
+    var n = String(p.gridName || "").toLowerCase();
+    if (CLASSIC.indexOf(n) >= 0) return "Classic Swiss";
+    if (/^(golden|fibonacci)/.test(n)) return "Golden ratio & Fibonacci";
+    var m = n.match(/^(letter|a2|a3|a4|a5)\b/);
+    if (m) return m[1] === "letter" ? "Letter" : m[1].toUpperCase();
+    return "My presets";
+  }
+  var GROUP_OPEN_KEY = "swissgrid.presetGroups.v1";
+
   var doc = null;          // { name, width, height, ppi, guides }
   var colorGuides = false; // Photoshop can color individual guides (2023+)
   var busy = false;
@@ -191,6 +210,7 @@
         $("colorPicker").value = G.rgbToHex(c.r, c.g, c.b).toLowerCase();
       } catch (e) { /* invalid while typing */ }
     }
+    if (sgCurrent) sgDraw(sgCurrent);
   }
 
   function clearInputs() {
@@ -314,7 +334,7 @@
         $("docInfo").textContent = doc.name + " · " + doc.width + " × " + doc.height + " px · " + doc.ppi + " ppi · " +
           (doc.width / doc.ppi * 25.4).toFixed(1) + " × " + (doc.height / doc.ppi * 25.4).toFixed(1) + " mm";
       }
-      if (changed) { updatePreview(); renderApplied(); }
+      if (changed) { updatePreview(); renderApplied(); renderSuggest(); if (!load(GROUP_OPEN_KEY, null)) renderPresets(); }
     }).catch(function (e) {
       $("docInfo").textContent = e.message;
     });
@@ -341,8 +361,21 @@
       step = lines[1] - lines[0];
       for (var i = 2; i < lines.length; i++) if (Math.abs(lines[i] - lines[i - 1] - step) > 0.01) { step = null; break; }
     }
-    return { uid: uid, name: name, hex: hex, top: lines.length ? lines[0] : null, step: step === null ? null : r2(step),
+    var rec = { uid: uid, name: name, hex: hex, top: lines.length ? lines[0] : null, step: step === null ? null : r2(step),
       rows: g.rows.count || 0, cell: g.rows.cell, lines: lines };
+    // The body leading SwissGrid recommends for this grid, so SwissType can offer the matching baseline.
+    try {
+      var tr = window.TypeRec.recommend(f, doc, g, G);
+      if (!tr.isBaseline) {
+        var cy = { ppi: doc.ppi, size: doc.height, defaultUnit: f.unit || "px" };
+        var rowLines = g.rows.count ? lines : [];
+        rec.unitPx = tr.lpx;
+        rec.unitPt = tr.unitPt;
+        rec.baseTop = rowLines.length ? rowLines[0] : (G.toPx(f.marginTop, cy) || 0);
+        rec.baseBottom = rowLines.length ? rowLines[rowLines.length - 1] : doc.height - (G.toPx(f.marginBottom, cy) || 0);
+      }
+    } catch (e) {}
+    return rec;
   }
 
   // Builds the baseline grid that belongs to the grid in the inputs (same unit the type sizes use).
@@ -408,6 +441,7 @@
       });
       applied[r.docName] = list;
       save(APPLIED_KEY, applied);
+      try { record.layerId = r.layerId; window.SwissGridStore && SwissGridStore.add(doc, record); } catch (e) {}
       renderApplied();
       remember();
 
@@ -432,6 +466,7 @@
     host("sg_remove(" + arg(payload) + ")").then(function (r) {
       setBusy(false);
       applied[doc.name] = (applied[doc.name] || []).filter(function (a) { return a.uid !== entry.uid; });
+      try { window.SwissGridStore && SwissGridStore.remove(doc, entry.uid); } catch (e) {}
       save(APPLIED_KEY, applied);
       renderApplied();
       status("Removed “" + entry.name + "” (" + r.removed + " guides" + (r.layerGone ? " and its layer" : "") + ").", "ok");
@@ -457,6 +492,7 @@
     host("sg_clearAll()").then(function (r) {
       setBusy(false);
       applied[r.docName] = [];
+      try { window.SwissGridStore && SwissGridStore.clear(doc); } catch (e) {}
       save(APPLIED_KEY, applied);
       renderApplied();
       status("Cleared " + r.guides + (r.guides === 1 ? " guide" : " guides") + (r.layers ? " and " + r.layers + (r.layers === 1 ? " SwissGrid layer" : " SwissGrid layers") : "") + ".", "ok");
@@ -502,6 +538,7 @@
     try { G.hexToRgb(f.colorHex); } catch (e) { status(e.message, "err"); return; }
     var list = getPresets();
     var i = list.findIndex(function (p) { return p.gridName.toLowerCase() === f.gridName.toLowerCase(); });
+    f.group = i >= 0 ? groupOf(list[i]) : "My presets";
     if (i >= 0) list[i] = f; else list.push(f);
     setPresets(list);
     status((i >= 0 ? "Updated preset “" : "Saved preset “") + f.gridName + "”.", "ok");
@@ -515,17 +552,37 @@
       box.appendChild(el("div", { cls: "empty", text: "No presets yet. Fill in the form, name it, Save preset." }));
       return;
     }
-    list.forEach(function (p) {
-      box.appendChild(el("div", { cls: "item" }, [
-        el("span", { cls: "chip", style: "background:" + p.colorHex }),
-        el("span", { cls: "name", text: p.gridName, title: p.gridName }),
-        el("button", { cls: "icon", text: "Load", onclick: function () { writeForm(p); remember(); status("Loaded “" + p.gridName + "”.", "ok"); } }),
-        el("button", { cls: "icon", text: "Apply", onclick: function () { writeForm(p); applyGrid(readForm()); } }),
-        el("button", { cls: "icon", text: "✕", title: "Delete preset", onclick: function () {
-          setPresets(getPresets().filter(function (q) { return q.gridName !== p.gridName; }));
-          status("Deleted preset “" + p.gridName + "”.", "ok");
-        } })
-      ]));
+    // Open by default: the group for this canvas (A3 on an A3 document...) and My presets.
+    var open = load(GROUP_OPEN_KEY, null);
+    if (!open) {
+      open = { "My presets": true };
+      try { if (doc && window.GridSuggest) { var d = GridSuggest.detect(doc); if (PRESET_GROUPS.indexOf(d.id) >= 0) open[d.id] = true; else open["Classic Swiss"] = true; } } catch (e) {}
+    }
+    PRESET_GROUPS.forEach(function (g) {
+      var items = list.filter(function (p) { return groupOf(p) === g; });
+      if (!items.length) return;
+      var isOpen = !!open[g];
+      var head = el("button", { cls: "pg-head" + (isOpen ? " open" : ""), title: isOpen ? "Collapse" : "Expand",
+        onclick: function () { open[g] = !open[g]; save(GROUP_OPEN_KEY, open); renderPresets(); } }, [
+        el("span", { cls: "pg-caret", text: isOpen ? "▾" : "▸" }),
+        el("span", { cls: "pg-name", text: g }),
+        el("span", { cls: "pg-count", text: String(items.length) })
+      ]);
+      box.appendChild(head);
+      if (!isOpen) return;
+      items.sort(function (a, b) { return a.gridName.localeCompare(b.gridName, undefined, { numeric: true }); });
+      items.forEach(function (p) {
+        box.appendChild(el("div", { cls: "item pg-item" }, [
+          el("span", { cls: "chip", style: "background:" + p.colorHex }),
+          el("span", { cls: "name", text: p.gridName, title: p.gridName }),
+          el("button", { cls: "icon", text: "Load", onclick: function () { writeForm(p); remember(); showTab("grid"); status("Loaded “" + p.gridName + "”.", "ok"); } }),
+          el("button", { cls: "icon", text: "Apply", onclick: function () { writeForm(p); applyGrid(readForm()); } }),
+          el("button", { cls: "icon", text: "✕", title: "Delete preset", onclick: function () {
+            setPresets(getPresets().filter(function (q) { return q.gridName !== p.gridName; }));
+            status("Deleted preset “" + p.gridName + "”.", "ok");
+          } })
+        ]));
+      });
     });
   }
 
@@ -556,7 +613,144 @@
 
   /* ---------- init ---------- */
 
+  /* ---------- suggested grid for this canvas ---------- */
+
+  var SG_KEY = "swissgrid.suggest.v1";
+  var sg = load(SG_KEY, { cols: 4, rows: null, shape: "square" });
+  var sgCurrent = null;
+
+  function sgCompute() {
+    if (!doc || !window.GridSuggest) return null;
+    try { return GridSuggest.suggest(doc, { cols: sg.cols, rows: sg.rows, shape: sg.shape }); }
+    catch (e) { return { error: e.message }; }
+  }
+
+  function sgName(s) {
+    var i = s.info, shapes = { square: "square", golden: "golden", wide: "golden wide", fibonacci: "Fibonacci" };
+    var c = i.canvas.kind === "custom" ? i.canvas.label : i.canvas.id;
+    return c + " · " + i.cols + " × " + i.rows + " " + shapes[i.shape] + " (" + i.bodyPt + "/" + i.leadingPt + " pt)";
+  }
+
+  function sgDraw(s) {
+    var svg = $("sgPreview"); while (svg.firstChild) svg.removeChild(svg.firstChild);
+    if (!doc) return;
+    var boxW = 74, boxH = 96, k = Math.min(boxW / doc.width, boxH / doc.height);
+    var pw = doc.width * k, ph = doc.height * k, ox = (boxW - pw) / 2, oy = (boxH - ph) / 2;
+    var NS = "http://www.w3.org/2000/svg";
+    function rect(x, y, w, h, fill, stroke) {
+      var r = document.createElementNS(NS, "rect");
+      r.setAttribute("x", ox + x * k); r.setAttribute("y", oy + y * k); r.setAttribute("width", Math.max(0.5, w * k)); r.setAttribute("height", Math.max(0.5, h * k));
+      r.setAttribute("fill", fill); if (stroke) { r.setAttribute("stroke", stroke); r.setAttribute("stroke-width", "0.75"); }
+      svg.appendChild(r);
+    }
+    rect(0, 0, doc.width, doc.height, "#f4f4f2", "#888");
+    if (!s || s.error) return;
+    var g; try { g = G.computeGrid(s.form, { width: doc.width, height: doc.height, ppi: doc.ppi }); } catch (e) { return; }
+    var col = $("colorHex").value || "#00AEEF";
+    var cx = pairs(g.columns.lines, s.info.cols), cy = pairs(g.rows.lines, s.info.rows);
+    cx.forEach(function (a) { cy.forEach(function (b) { rect(a[0], b[0], a[1] - a[0], b[1] - b[0], hexA(col, 0.28)); }); });
+  }
+  function pairs(lines, n) {   // field edges: margin start, then cell start/end per field
+    var l = lines.slice().sort(function (a, b) { return a - b; }), out = [];
+    for (var i = 0; i + 1 < l.length && out.length < n; i += 2) out.push([l[i], l[i + 1]]);
+    return out;
+  }
+  function hexA(hex, a) {
+    try { var c = G.hexToRgb(hex); return "rgba(" + c.r + "," + c.g + "," + c.b + "," + a + ")"; } catch (e) { return "rgba(0,174,239," + a + ")"; }
+  }
+
+  function renderSuggest() {
+    if (!$("suggestBox")) return;
+    var s = sgCurrent = sgCompute();
+    $("sgCanvas").textContent = doc && window.GridSuggest ? (function () { var d = GridSuggest.detect(doc); return d.label + " · " + d.mm[0].toFixed(0) + " × " + d.mm[1].toFixed(0) + " mm"; })() : "Open a document";
+    $("sgCols").textContent = s && s.info ? s.info.cols : sg.cols;
+    $("sgRows").textContent = s && s.info ? s.info.rows : (sg.rows || "–");
+    $("sgShape").value = sg.shape;
+    $("sgRowAuto").classList.toggle("on", !sg.rows);
+    $("sgApply").disabled = $("sgUse").disabled = !(s && s.info);
+    if (!s) { $("sgSpec").textContent = "Open a document to get grid suggestions for its size."; sgDraw(null); return; }
+    if (s.error) { $("sgSpec").textContent = s.error; sgDraw(null); return; }
+    var i = s.info, f2 = function (v) { return v.toFixed(1); };
+    $("sgSpec").innerHTML = "<b>" + i.cols + " × " + i.rows + "</b> fields of <b>" + i.linesPerField + " lines</b> (" + f2(i.moduleMm[0]) + " × " + f2(i.moduleMm[1]) + " mm) · " +
+      "margins " + f2(i.marginsMm.side) + " sides, " + f2(i.marginsMm.top) + " top, " + f2(i.marginsMm.bottom) + " bottom · gutter " + i.lineMm.toFixed(2) + " mm · " +
+      "body <b>" + i.bodyPt + "/" + i.leadingPt + " pt</b>";
+    sgDraw(s);
+  }
+
+  function sgSet(change) {
+    Object.keys(change).forEach(function (k) { sg[k] = change[k]; });
+    save(SG_KEY, sg);
+    renderSuggest();
+  }
+
+  function sgToForm(s) {
+    var cur = readForm();
+    var f = {}; Object.keys(s.form).forEach(function (k) { f[k] = s.form[k]; });
+    f.gridName = sgName(s); f.colorHex = cur.colorHex; f.drawMode = cur.drawMode; f.lineWidth = cur.lineWidth;
+    return f;
+  }
+
+  function sgInit() {
+    $("sgColMinus").addEventListener("click", function () { sgSet({ cols: Math.max(1, sg.cols - 1) }); });
+    $("sgColPlus").addEventListener("click", function () { sgSet({ cols: Math.min(12, sg.cols + 1) }); });
+    $("sgRowMinus").addEventListener("click", function () { var r = sgCurrent && sgCurrent.info ? sgCurrent.info.rows : 2; sgSet({ rows: Math.max(1, r - 1) }); });
+    $("sgRowPlus").addEventListener("click", function () { var r = sgCurrent && sgCurrent.info ? sgCurrent.info.rows : 1; sgSet({ rows: Math.min(40, r + 1) }); });
+    $("sgRowAuto").addEventListener("click", function () { sgSet({ rows: null }); });
+    $("sgShape").addEventListener("change", function () { sgSet({ shape: $("sgShape").value, rows: null, cols: $("sgShape").value === "fibonacci" ? GridSuggest.stepCols(sg.cols, 0, "fibonacci") : sg.cols }); });
+    $("sgLooser").addEventListener("click", function () { sgSet({ cols: GridSuggest.stepCols(sg.cols, -1, sg.shape), rows: null }); });
+    $("sgDenser").addEventListener("click", function () { sgSet({ cols: GridSuggest.stepCols(sg.cols, 1, sg.shape), rows: null }); });
+    $("sgUse").addEventListener("click", function () {
+      if (!sgCurrent || !sgCurrent.info) return;
+      writeForm(sgToForm(sgCurrent)); remember();
+      status("Loaded the suggestion into the fields. Adjust anything, then Apply grid.", "ok");
+      var fld = $("gridName"); if (fld && fld.scrollIntoView) fld.scrollIntoView({ block: "start" });
+    });
+    $("sgApply").addEventListener("click", function () {
+      if (!sgCurrent || !sgCurrent.info) return;
+      var f = sgToForm(sgCurrent);
+      writeForm(f); remember();
+      applyGrid(f, function () {
+        status("Applied “" + f.gridName + "”. Click + Baseline to add its baseline grid; Type sizes has the matching sizes.", "ok");
+      });
+    });
+    renderSuggest();
+  }
+
+  /* ---------- tabs ---------- */
+
+  var TAB_KEY = "swissgrid.tab.v1";
+  function showTab(name) {
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("active", t.getAttribute("data-tab") === name); });
+    Array.prototype.forEach.call(document.querySelectorAll(".pane"), function (p) { p.classList.toggle("hidden", p.id !== "pane-" + name); });
+    var sc = document.querySelector(".panel"); if (sc) sc.scrollTop = 0;
+    save(TAB_KEY, name);
+  }
+
+  // Panel size and Photoshop details, for troubleshooting display-scaling problems.
+  function copyDiagnostics() {
+    var info = {
+      swissgrid: "1.2.0",
+      viewport: [window.innerWidth, window.innerHeight], devicePixelRatio: window.devicePixelRatio,
+      screen: [screen.width, screen.height], panelScroll: (function () { var p = document.querySelector(".panel"); return p ? [p.scrollHeight, p.clientHeight] : null; })(),
+      cep: (function () { try { return window.__adobe_cep__.getCurrentApiVersion(); } catch (e) { return null; } })(),
+      hostEnv: (function () { try { var h = JSON.parse(window.__adobe_cep__.getHostEnvironment()); return { app: h.appName, version: h.appVersion, os: h.appUILocale, scale: h.appSkinInfo && h.appSkinInfo.baseFontSize }; } catch (e) { return null; } })(),
+      ua: navigator.userAgent, doc: doc
+    };
+    var txt = JSON.stringify(info, null, 2);
+    try {
+      var ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); document.body.removeChild(ta);
+      status("Diagnostics copied. Paste them to Claude.", "ok");
+    } catch (e) { status(txt, "ok"); }
+  }
+
   function init() {
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
+      t.addEventListener("click", function () { showTab(t.getAttribute("data-tab")); });
+    });
+    showTab(load(TAB_KEY, "grid"));
+    sgInit();
+    $("btnDiag").addEventListener("click", copyDiagnostics);
     applyTheme();
     if (cep && cep.addEventListener) {
       try { cep.addEventListener("com.adobe.csxs.events.ThemeColorChanged", applyTheme); } catch (e) { /* optional */ }
@@ -569,7 +763,7 @@
     });
 
     // Seed starter presets. New starters are added once; ones you delete stay deleted.
-    var seeded = load("swissgrid.seeded.v1", []);
+    var seeded = load("swissgrid.seeded.v1", []).concat(load("swissgrid.seeded.v2", []));
     var current = load(PRESET_KEY, []);
     DEFAULT_PRESETS.forEach(function (d) {
       if (seeded.indexOf(d.gridName) >= 0) return;
@@ -578,7 +772,7 @@
     });
     current.sort(function (a, b) { return a.gridName.localeCompare(b.gridName); });
     save(PRESET_KEY, current);
-    save("swissgrid.seeded.v1", seeded);
+    save("swissgrid.seeded.v2", seeded);
     var last = load(LAST_KEY, null);
     if (last) writeForm(last);
 

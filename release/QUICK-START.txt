@@ -1,0 +1,42 @@
+SWISS TOOLS FOR PHOTOSHOP: QUICK START
+======================================
+
+Works with Photoshop CC 2019 through 2024 (version 20 to 25) on Windows and macOS.
+
+1. INSTALL
+   Windows: double-click Install-<Panel>.bat
+   macOS:   right-click Install-<Panel>-Mac.command > Open > Open
+            (macOS asks the first time because the file came from the internet)
+   Then quit and reopen Photoshop.
+
+2. OPEN THE PANEL
+   Window > Extensions (legacy) > SwissGrid (or SwissType)
+   Dock it next to Layers or leave it floating.
+
+3. ACTIVATE
+   Paste the license key from your Gumroad receipt and click Activate.
+   - A SwissGrid key unlocks SwissGrid. A SwissType key unlocks SwissType.
+   - A Swiss Bundle key unlocks both: activate it in one panel and the
+     other unlocks by itself.
+   - Each key works on up to 3 computers. Moving to a new computer?
+     Click "Remove license" at the bottom of the panel on the old one,
+     and email us if you run out of activations.
+   - The panel re-checks your key about once a month and keeps working
+     offline for two weeks if it can't connect.
+
+4. LEARN IT
+   SwissGrid: see SwissGrid/README.md
+   SwissType: see SwissType/readme.txt (every feature explained)
+
+UNINSTALL
+   Windows: Uninstall-<Panel>.bat     macOS: Uninstall-<Panel>-Mac.command
+
+TROUBLESHOOTING
+   Panel cut off at the bottom (Windows with display scaling, e.g. 125%
+   or 150%): this is a Photoshop bug with this panel type. Both panels
+   use tabs so everything stays near the top. If something is still
+   hidden, drag the panel out to float it and resize it, or set Windows
+   display scaling to 100% before opening Photoshop.
+   Panel missing from Window > Extensions (legacy): run the installer
+   again and restart Photoshop.
+   "Couldn't reach Gumroad": check your internet connection, firewall or VPN.

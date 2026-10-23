@@ -144,3 +144,37 @@ body.light { --fg: #1f1f1f; --muted: #555; --field: #fff; --line: #aaa; --btn: #
 .item .stack { flex: 1 1 auto; min-width: 0; }
 body.busy button { pointer-events: none; opacity: 0.6; }
 input.locked { opacity: 0.7; }
+
+/* ---- license gate ---- */
+.license-gate {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 1000;
+  background: var(--bg); display: flex; align-items: flex-start; justify-content: center;
+  padding: 28px 14px; overflow: auto;
+}
+.lg-card { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 8px; }
+.lg-title { font-size: 15px; font-weight: 700; letter-spacing: 0.02em; }
+.lg-sub { font-size: 11px; color: var(--muted); line-height: 1.45; }
+.license-gate input[type="text"] { width: 100%; height: 26px; font-family: Consolas, Menlo, monospace; font-size: 11px; }
+.license-gate button.primary { width: 100%; margin: 0; }
+.lg-msg { font-size: 11px; min-height: 14px; line-height: 1.4; }
+.lg-msg.err { color: var(--err); }
+.lg-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+button.lg-link { background: none; border: none; padding: 0; color: var(--accent); font-size: 11px; cursor: pointer; text-decoration: underline; }
+button.lg-link:hover { background: none; filter: brightness(1.2); }
+.license-footer { margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 10px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.license-footer .lg-note { width: 100%; color: #ffc861; }
+
+/* ---- scrolling: .panel is the scroll container (works around CEP 11+ wheel bugs) ---- */
+html, body { height: 100%; overflow: hidden; }
+.panel { height: 100%; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; }
+.panel::-webkit-scrollbar { width: 9px; }
+.panel::-webkit-scrollbar-track { background: transparent; }
+.panel::-webkit-scrollbar-thumb { background: #5a5a5a; border-radius: 5px; border: 2px solid var(--bg); }
+.panel::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+
+button.diag-link { display: block; margin: 2px 0 10px; font-size: 10px; }
+
+/* ---- long lists scroll inside a fixed box, so nothing ends up below a cut-off panel (1.1.2) ---- */
+#scaleList, #styleList { max-height: 300px; overflow-y: auto; }
+#scaleList::-webkit-scrollbar, #styleList::-webkit-scrollbar { width: 8px; }
+#scaleList::-webkit-scrollbar-thumb, #styleList::-webkit-scrollbar-thumb { background: #5a5a5a; border-radius: 4px; }
